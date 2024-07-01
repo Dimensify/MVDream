@@ -1,5 +1,6 @@
 """SAMPLING ONLY."""
 
+import intel_extension_for_pytorch as ipex
 import torch
 import numpy as np
 from tqdm import tqdm
@@ -17,8 +18,8 @@ class DDIMSampler(object):
 
     def register_buffer(self, name, attr):
         if type(attr) == torch.Tensor:
-            if attr.device != torch.device("cuda"):
-                attr = attr.to(torch.device("cuda"))
+            if attr.device != torch.device("xpu"):
+                attr = attr.to(torch.device("xpu"))
         setattr(self, name, attr)
 
     def make_schedule(self, ddim_num_steps, ddim_discretize="uniform", ddim_eta=0., verbose=True):

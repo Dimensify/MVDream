@@ -1,5 +1,6 @@
 from inspect import isfunction
 import math
+import intel_extension_for_pytorch as ipex
 import torch
 import torch.nn.functional as F
 from torch import nn, einsum
@@ -172,7 +173,7 @@ class CrossAttention(nn.Module):
 
         # force cast to fp32 to avoid overflowing
         if _ATTN_PRECISION =="fp32":
-            with torch.autocast(enabled=False, device_type = 'cuda'):
+            with torch.autocast(enabled=False, device_type = 'xpu'):
                 q, k = q.float(), k.float()
                 sim = einsum('b i d, b j d -> b i j', q, k) * self.scale
         else:

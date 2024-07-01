@@ -5,6 +5,7 @@ import argparse
 from PIL import Image
 import numpy as np
 from omegaconf import OmegaConf
+import intel_extension_for_pytorch as ipex
 import torch 
 
 from mvdream.camera_utils import get_camera
@@ -16,10 +17,10 @@ def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    torch.xpu.manual_seed_all(seed)
 
 
-def t2i(model, image_size, prompt, uc, sampler, step=20, scale=7.5, batch_size=8, ddim_eta=0., dtype=torch.float32, device="cuda", camera=None, num_frames=1):
+def t2i(model, image_size, prompt, uc, sampler, step=20, scale=7.5, batch_size=8, ddim_eta=0., dtype=torch.float32, device="xpu", camera=None, num_frames=1):
     if type(prompt)!=list:
         prompt = [prompt]
     with torch.no_grad(), torch.autocast(device_type=device, dtype=dtype):
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument("--camera_azim_span", type=int, default=360)
     parser.add_argument("--seed", type=int, default=23)
     parser.add_argument("--fp16", action="store_true")
-    parser.add_argument("--device", type=str, default='cuda')
+    parser.add_argument("--device", type=str, default='xpu')
     args = parser.parse_args()
 
     dtype = torch.float16 if args.fp16 else torch.float32
